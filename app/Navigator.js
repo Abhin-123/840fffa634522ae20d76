@@ -9,10 +9,8 @@ import NavigationService from './NavigationService';
 import * as Storage from '../app/service/AsyncStoreConfig';
 
 //Before Login Screens
-import Login from './Screens/BeforeLogin/Login';
+import Detail from './Screens/BeforeLogin/Detail';
 import Welcome from './Screens/BeforeLogin/Welcome';
-import SignUp from './Screens/BeforeLogin/SignUp';
-import Forgot from './Screens/BeforeLogin/ForgotPassword';
 
 //After Login Screens
 import Homepage from './Screens/AfterLogin/Homepage';
@@ -46,11 +44,9 @@ const styles = StyleSheet.create({
 //Before Login Stack
 function BeforeLogin() {
   return (
-    <BeforeLoginStack.Navigator headerMode={"none"} >
-      <BeforeLoginStack.Screen name="Welcome" component={Welcome} />
-      <BeforeLoginStack.Screen name="Login" component={Login} />
-      <BeforeLoginStack.Screen name="SignUp" component={SignUp} />
-      <BeforeLoginStack.Screen name="Forgot" component={Forgot} />
+    <BeforeLoginStack.Navigator  >
+      <BeforeLoginStack.Screen name="Home" component={Welcome} />
+      <BeforeLoginStack.Screen name="Detail" component={Detail} />
     </BeforeLoginStack.Navigator>
   );
 }
