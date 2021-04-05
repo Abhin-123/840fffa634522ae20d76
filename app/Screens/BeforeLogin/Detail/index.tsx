@@ -1,6 +1,5 @@
 import React, { Component, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { Login, Logout } from "../../../Redux/Actions/login_action";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Container, Button, Text, View } from "native-base";
 
@@ -25,9 +24,4 @@ const Detail: React.FC<Props> = (props) => {
   );
 };
 
-function mapStateToProps(state: any) {
-  const { hideProgress } = state.loginReducer;
-  return { hideProgress };
-}
-
-export default connect(mapStateToProps, { Login, Logout })(Detail);
+export default Detail;

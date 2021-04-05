@@ -166,9 +166,4 @@ const Welcome = (props: any) => {
   );
 };
 
-function mapStateToProps(state: any) {
-  const { hideProgress } = state.loginReducer;
-  return { hideProgress };
-}
-
-export default connect(mapStateToProps, {})(Welcome);
+export default Welcome;
