@@ -1,5 +1,5 @@
 import React, {Component, useState, useRef} from 'react';
-import { FlatList } from 'react-native';
+import { FlatList,TextInput } from 'react-native';
 import {connect} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import { Container, Button, Text, View, Input } from 'native-base';
@@ -10,11 +10,12 @@ const instance = axios.create();
 const Welcome = (props: any) => {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
-  const [search_word, setsearch_word] = useState("");
+  const [searchPosts, setSearchPosts] = useState([]);
+  const [searchText, setsearchText] = useState("");
   const [pageNumber, setPageNumber] = useState(1)
 
   React.useEffect(() => {
-    const interval = setInterval(() => callApi(), 10000)
+    const interval = setInterval(() => callApi(), 3000)
     return () => {
       clearInterval(interval);
     }
@@ -32,6 +33,7 @@ const Welcome = (props: any) => {
       .then((res) => {
         let newPosts = res.data.hits;
         setPosts([...posts,...newPosts])
+        setSearchPosts([...posts,...newPosts])
         setPageNumber(pageNumber+1)
       })
       .catch((ERROR) => {
@@ -46,39 +48,69 @@ const Welcome = (props: any) => {
         backgroundColor:'#FFF',
         justifyContent: "space-between",
         borderBottomWidth: 1,
+        height:250,
         borderColor: '#cecece' }} >
-        <Text style={{fontWeight:'bold',marginBottom:5,color:'#000'}}>Created At - <Text style={{fontWeight:'400'}}>{item.created_at}</Text></Text>
-        <Text style={{fontWeight:'bold',marginBottom:5}}>Title - <Text style={{fontWeight:'400'}}>{item.title}</Text></Text>
-        <Text style={{fontWeight:'bold',marginBottom:5}}>Url - <Text style={{fontWeight:'400'}}>{item.url}</Text></Text>
-        <Text style={{fontWeight:'bold',marginBottom:5}}>Author - <Text style={{fontWeight:'400'}}>{item.author}</Text></Text>
+          <View>
+            <Text style={{fontWeight:'bold',marginBottom:5,color:'#000'}}>Created At - <Text style={{fontWeight:'400'}}>{item.created_at} {'\n'}</Text></Text>
+            <Text style={{fontWeight:'bold',marginBottom:5}}>Title - <Text style={{fontWeight:'400'}}>{item.title} {'\n'}</Text></Text>
+            <Text style={{fontWeight:'bold',marginBottom:5}}>Url - <Text style={{fontWeight:'400'}}>{item.url} {'\n'}</Text></Text>
+            <Text style={{fontWeight:'bold',marginBottom:5}}>Author - <Text style={{fontWeight:'400'}}>{item.author} {'\n'}</Text></Text>
+          </View>
       </Button>
     )
   }
 
   const loadmore = () =>{
-    alert("more")
+    let url = 'https://hn.algolia.com/api/v1/search_by_date?tags=story&page='+pageNumber;
+    instance({
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      url: url,
+    })
+      .then((res) => {
+        let newPosts = res.data.hits;
+        setPosts([...posts,...newPosts])
+        setSearchPosts([...posts,...newPosts])
+        setPageNumber(pageNumber+1)
+      })
+      .catch((ERROR) => {
+        console.log('ERROR',url, ERROR);
+      });
   }
 
   const header_=()=>{
     return(
-      <Input 
-        placeholder="Title / author / url" 
-        value={search_word}
-        onChange={(input)=>{search(input)}}
+      <TextInput 
+        placeholder="Search for Title / author / url" 
+        style={{width:'90%',alignSelf:'center',height:50,borderWidth: 1,borderColor:'#cecece',marginVertical:20}}
+        value={searchText}
+        onChangeText={
+          input=>{
+            setsearchText(input)
+            search(input)
+          }
+        }
       />
     )
   }
 
-  const search = item =>{
-    if(item===''){
-
+  const search = ITEM =>{
+    console.log(ITEM)
+    if(ITEM===''){
+      setPosts(searchPosts)
     }
     else {
-      //searching for Title
-      const title = posts.filter(function(data){
-        return data.title.toLowerCase().startsWith(item.toLowerCase());
+      const name = searchPosts
+      const mTemp = name.filter(function(item){
+        return (
+          item.title&&item.title.toLowerCase().startsWith(ITEM.toLowerCase()) ||
+          item.author&&item.author.toLowerCase().startsWith(ITEM.toLowerCase()) ||
+          item.url&&item.url.toLowerCase().startsWith(ITEM.toLowerCase())
+        )
       })
-      setPosts(title)
+      setPosts(mTemp)
     }
   }
 
